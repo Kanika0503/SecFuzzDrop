@@ -4,7 +4,7 @@ from iwd_optimizer import optimize_paths
 from falco_simulator import simulate_falco_alerts
 from cadvisor_simulator import simulate_cadvisor_metrics
 from security_rules import apply_security_rules
-
+import streamlit.components.v1 as components
 def main():
     st.set_page_config(page_title="Secure Container Scheduler", layout="wide")
     st.title("🔐 Secure Container Scheduler using Fuzzy Logic & IWD Optimization")
@@ -47,6 +47,13 @@ def main():
 
     st.markdown("---")
     st.caption("Real-time monitoring via Falco & cAdvisor not shown in web GUI. Please check Docker-based monitoring setup separately.")
+st.subheader("📊 Real-Time Resource Monitoring")
 
+# Embed cAdvisor live
+st.markdown("### Embedded cAdvisor Dashboard")
+components.iframe("http://localhost:8080", width=1000, height=600)
+
+# Optional instructions
+st.info("For real-time security alerts, use `docker logs -f falco` in your terminal.")
 if __name__ == "__main__":
     main()
