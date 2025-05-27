@@ -4,3 +4,4 @@ scikit-fuzzy
 matplotlib
 networkx
 docker
+scipy
