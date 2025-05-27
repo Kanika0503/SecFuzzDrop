@@ -6,38 +6,47 @@ from cadvisor_simulator import simulate_cadvisor_metrics
 from security_rules import apply_security_rules
 
 def main():
-    st.title("Secure Container Scheduler")
+    st.set_page_config(page_title="Secure Container Scheduler", layout="wide")
+    st.title("🔐 Secure Container Scheduler using Fuzzy Logic & IWD Optimization")
 
-    container_count = st.slider("Select number of containers", 1, 10, 3)
-    st.write(f"Scheduling {container_count} containers...")
+    num_containers = st.slider("Select Number of Containers", 1, 10, 3)
 
-    container_scores = []
-    for i in range(container_count):
+    st.subheader("🧠 Fuzzy Node Evaluation Scores")
+    node_scores = []
+
+    for i in range(num_containers):
+        cpu_val = 40 + i * 5     # Example values for simulation
+        mem_val = 50 + i * 4
+        latency_val = 60 - i * 3
+        threat_val = min(10, i * 2)
+
         score = evaluate_node(
-            cpu_val=50 + i*5,
-            mem_val=60 + i*4,
-            net_val=70 - i*2,
-            latency_val=30 + i,
-            disk_val=40 + i*3,
-            temp_val=25 + i,
-            threat_val=i
+            cpu_val=cpu_val,
+            mem_val=mem_val,
+            latency_val=latency_val,
+            threat_val=threat_val
         )
-        container_scores.append({"container_id": f"c{i}", "score": score})
 
-    st.subheader("Fuzzy Evaluation Scores")
-    st.json(container_scores)
+        node_scores.append({
+            "Container": f"C{i + 1}",
+            "CPU": cpu_val,
+            "Memory": mem_val,
+            "Latency": latency_val,
+            "Threat Level": threat_val,
+            "Fuzzy Score": round(score, 2)
+        })
 
-    optimized = optimize_paths(container_scores)
-    secure = apply_security_rules(optimized)
+    st.table(node_scores)
 
-    st.subheader("Optimized & Secured Scheduling")
-    st.json(secure)
+    st.subheader("📍 Optimized Scheduling using IWD Algorithm")
+    st.info("IWD algorithm will be applied here for container-node mapping with anti-collocation & anti-affinity rules (implementation in progress or simulated below).")
 
-    st.subheader("Falco Security Monitoring")
-    st.code(simulate_falco_alerts(), language='bash')
+    # Display dummy optimized assignment
+    for i, ns in enumerate(node_scores):
+        st.write(f"✅ {ns['Container']} scheduled to Node-{(i % 3) + 1} | Score: {ns['Fuzzy Score']}")
 
-    st.subheader("cAdvisor Resource Monitoring")
-    st.json(simulate_cadvisor_metrics())
+    st.markdown("---")
+    st.caption("Real-time monitoring via Falco & cAdvisor not shown in web GUI. Please check Docker-based monitoring setup separately.")
 
 if __name__ == "__main__":
     main()
