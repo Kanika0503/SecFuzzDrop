@@ -1,9 +1,9 @@
 import streamlit as st
-from fuzzy_logic.fuzzy_engine import evaluate_node
-from optimizer.iwd_optimizer import optimize_paths
-from monitor.falco_simulator import simulate_falco_alerts
-from monitor.cadvisor_simulator import simulate_cadvisor_metrics
-from utils.security_rules import apply_security_rules
+from fuzzy_engine import evaluate_node
+from iwd_optimizer import optimize_paths
+from falco_simulator import simulate_falco_alerts
+from cadvisor_simulator import simulate_cadvisor_metrics
+from security_rules import apply_security_rules
 
 def main():
     st.title("Secure Container Scheduler")
