@@ -1,42 +1,43 @@
-import sys
-import os
-sys.path.append("D:/Test/secure_container_scheduler")
 import streamlit as st
 from fuzzy_logic.fuzzy_engine import evaluate_node
-from iwd_algorithm.iwd_scheduler import iwd_schedule
-from monitoring.falco_listener import simulate_falco_alerts
+from optimizer.iwd_optimizer import optimize_paths
+from monitor.falco_simulator import simulate_falco_alerts
+from monitor.cadvisor_simulator import simulate_cadvisor_metrics
+from utils.security_rules import apply_security_rules
 
 def main():
-    st.title("SecuFuzzDrop:Secure Fuzzy based and Intelligent Water Drop Alogirhtm based Container Scheduling")
+    st.title("Secure Container Scheduler")
 
-    container_count = st.number_input("Enter number of containers", min_value=1, max_value=100, value=5)
-    if st.button("Schedule"):
-        nodes = []
-        for i in range(5):
-            node = {
-                "id": f"Node-{i+1}",
-                "score": evaluate_node(
-                    cpu_val=50 + i*5,
-                    memory_val=60 + i*5,
-                    trust_val=7 - i,
-                    latency_val=20 + i*3,
-                    load_val=50 - i*5,
-                    threat_val=i
-                )
-            }
-            nodes.append(node)
+    container_count = st.slider("Select number of containers", 1, 10, 3)
+    st.write(f"Scheduling {container_count} containers...")
 
-        containers = [f"Container-{i+1}" for i in range(container_count)]
-        allocation = iwd_schedule(nodes, containers)
+    container_scores = []
+    for i in range(container_count):
+        score = evaluate_node(
+            cpu_val=50 + i*5,
+            mem_val=60 + i*4,
+            net_val=70 - i*2,
+            latency_val=30 + i,
+            disk_val=40 + i*3,
+            temp_val=25 + i,
+            threat_val=i
+        )
+        container_scores.append({"container_id": f"c{i}", "score": score})
 
-        st.subheader("Container Allocation:")
-        for container, node in allocation.items():
-            st.write(f"{container} → {node}")
+    st.subheader("Fuzzy Evaluation Scores")
+    st.json(container_scores)
 
-        st.subheader("Falco Security Alerts:")
-        alerts = simulate_falco_alerts()
-        for alert in alerts:
-            st.warning(f"{alert['type']} detected on {alert['node']}")
+    optimized = optimize_paths(container_scores)
+    secure = apply_security_rules(optimized)
+
+    st.subheader("Optimized & Secured Scheduling")
+    st.json(secure)
+
+    st.subheader("Falco Security Monitoring")
+    st.code(simulate_falco_alerts(), language='bash')
+
+    st.subheader("cAdvisor Resource Monitoring")
+    st.json(simulate_cadvisor_metrics())
 
 if __name__ == "__main__":
     main()
