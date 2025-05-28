@@ -5,7 +5,7 @@ from falco_simulator import simulate_falco_alerts
 from cadvisor_simulator import simulate_cadvisor_metrics
 from security_rules import apply_security_rules
 import streamlit.components.v1 as components
-from security.security_engine import detect_side_channel_attack, detect_fake_container
+from security_engine import detect_side_channel_attack, detect_fake_container
 
 # Optional: simulate dummy metrics
 def simulate_cadvisor_metrics():
